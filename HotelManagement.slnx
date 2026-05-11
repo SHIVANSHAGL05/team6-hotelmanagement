@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution.Items/">
+    <File Path="compose.yaml" />
+  </Folder>
+  <Project Path="HotelManagement.API/HotelManagement.API.csproj" />
+  <Project Path="HotelManagement.Common/HotelManagement.Common.csproj" />
+</Solution>

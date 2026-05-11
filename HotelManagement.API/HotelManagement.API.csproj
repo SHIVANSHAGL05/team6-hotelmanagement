@@ -1,0 +1,73 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="16.1.1" />
+        <PackageReference Include="FluentValidation" Version="12.1.1" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.26" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.26" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.26">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlserver" Version="8.0.26" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Modules\AmenityModule\Controllers\" />
+      <Folder Include="Modules\AmenityModule\Exceptions\" />
+      <Folder Include="Modules\AmenityModule\Mappings\" />
+      <Folder Include="Modules\AmenityModule\Middlewares\" />
+      <Folder Include="Modules\AmenityModule\Validators\" />
+        
+      <Folder Include="Modules\ReviewModule\Controllers\" />
+      <Folder Include="Modules\ReviewModule\DTOs\" />
+      <Folder Include="Modules\ReviewModule\Exceptions\" />
+      <Folder Include="Modules\ReviewModule\Mappings\" />
+      <Folder Include="Modules\ReviewModule\Middlewares\" />
+      <Folder Include="Modules\ReviewModule\Repositories" />
+      <Folder Include="Modules\ReviewModule\Services\" />
+      <Folder Include="Modules\ReviewModule\Validators\" />
+        
+      <Folder Include="Modules\PaymentModule\Controllers\" />
+      <Folder Include="Modules\PaymentModule\Exceptions\" />
+      <Folder Include="Modules\PaymentModule\Mappings\" />
+      <Folder Include="Modules\PaymentModule\Validators\" />
+        
+      <Folder Include="Modules\HotelModule\Controllers\" />
+      <Folder Include="Modules\HotelModule\Exceptions\" />
+      <Folder Include="Modules\HotelModule\Mappings\" />
+      <Folder Include="Modules\HotelModule\Middlewares\" />
+      <Folder Include="Modules\HotelModule\Validators\" />
+        
+      <Folder Include="Modules\RoomModule\Controllers\" />
+      <Folder Include="Modules\RoomModule\Exceptions\" />
+      <Folder Include="Modules\RoomModule\Mappings\" />
+      <Folder Include="Modules\RoomModule\Middlewares\" />
+      <Folder Include="Modules\RoomModule\Validators\" />
+        
+      <Folder Include="Modules\RoomTypeModule\Controllers\" />
+      <Folder Include="Modules\RoomTypeModule\Exceptions\" />
+      <Folder Include="Modules\RoomTypeModule\Mappings\" />
+      <Folder Include="Modules\RoomTypeModule\Validators\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\HotelManagement.Common\HotelManagement.Common.csproj" />
+    </ItemGroup>
+
+</Project>
