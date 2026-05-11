@@ -1,9 +1,10 @@
 ﻿using HotelManagement.Common.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagement.Common.Data;
 
-public partial class HotelDbContext : DbContext
+public partial class HotelDbContext : IdentityDbContext<ApplicationUser>
 {
     public HotelDbContext() { }
 
@@ -214,4 +215,56 @@ public partial class HotelDbContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Amenity>(entity => 
+            entity.Property(p => p.Description).HasMaxLength(255));
+        
+        modelBuilder.Entity<Hotel>(entity =>
+            entity.Property(p => p.Description).HasMaxLength(1023));
+    
+        modelBuilder.Entity<Review>(entity =>
+            entity.Property(p => p.Comment).HasMaxLength(511));
+    
+        modelBuilder.Entity<RoomType>(entity =>
+        {
+            entity.Property(p => p.PricePerNight)
+                .HasPrecision(10, 2);
+            
+            entity.Property(p => p.Description).HasMaxLength(255);
+        });
+    
+        modelBuilder.Entity<Payment>()
+            .Property(p => p.Amount)
+            .HasPrecision(10, 2);
+        
+        modelBuilder.Entity<ApplicationUser>(entity =>
+        {
+            entity.HasIndex(e => e.Email);
+            entity.ToTable("Users");
+
+            entity.HasMany(u => u.Reservations)
+                .WithMany(r => r.ApplicationUsers)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserReservations",
+                    r => r.HasOne<Reservation>()
+                        .WithMany()
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("fk_UserReservations_Reservation"),
+                    l => l.HasOne<ApplicationUser>()
+                        .WithMany()
+                        .HasForeignKey("Email")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("fk_UserReservations_User"),
+                    j =>
+                    {
+                        j.HasKey("ReservationId", "Email").HasName("pk_UserReservations");
+                        j.ToTable("UserReservations");
+                        j.IndexerProperty<string>("Email").HasColumnName("user_email");
+                        j.IndexerProperty<int>("ReservationId").HasColumnName("reservation_id");
+                    });
+        });
+    }
 }

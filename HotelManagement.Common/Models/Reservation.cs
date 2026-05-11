@@ -24,4 +24,6 @@ public partial class Reservation
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
     
     public virtual Room? Room { get; set; }
+    
+    public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; } = new List<ApplicationUser>();
 }
