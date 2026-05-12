@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using HotelManagement.API.DTOs;
 using HotelManagement.API.Modules.ReservationModule.DTOs;
 using HotelManagement.API.Modules.ReservationModule.Services;
@@ -8,7 +9,7 @@ namespace HotelManagement.API.Modules.ReservationModule.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class ReservationController(IReservationService reservationService) : ControllerBase
 {
     private readonly IReservationService _reservationService = reservationService;
@@ -23,6 +24,24 @@ public class ReservationController(IReservationService reservationService) : Con
             StatusCode = StatusCodes.Status200OK,
             Message = "Successfully retrieved reservation.",
             Data = reservation,
+            Errors = null,
+            Timestamp = DateTime.UtcNow
+        };
+        return Ok(response);
+    }
+
+    [HttpGet("my-reservations")]
+    public async Task<IActionResult> GetMyReservations()
+    {
+        var user = User.FindFirst(ClaimTypes.Email) ?? throw new NullReferenceException("Email");
+        var userEmail = user.Value;
+        var reservations = await _reservationService.GetReservationsByUserEmailAsync(userEmail!);
+        var response = new ApiResponse<List<ReservationDetailsDto>>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Successfully retrieved reservations.",
+            Data = reservations,
             Errors = null,
             Timestamp = DateTime.UtcNow
         };

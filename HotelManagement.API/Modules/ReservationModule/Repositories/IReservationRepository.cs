@@ -7,4 +7,5 @@ public interface IReservationRepository
     Task<Reservation?> GetReservationByIdAsync(int reservationId);
     Task<Reservation> CreateReservationAsync(Reservation reservation);
     Task<bool> HasReservationDateConflictAsync(int roomId, DateOnly checkIn, DateOnly checkOut);
+    Task<IEnumerable<Reservation>> GetReservationsByUserIdAsync(string userId);
 }

@@ -4,64 +4,62 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagement.API.Modules.HotelModule.Repositories;
 
-public class HotelRepository(HotelDbContext dbContext) : IHotelRepository
+public class HotelRepository : IHotelRepository
 {
-    private readonly HotelDbContext _dbContext = dbContext;
+    private readonly HotelDbContext _context;
 
-    public async Task<Hotel?> GetByIdAsync(int hotelId) =>
-        await _dbContext.Hotels.FindAsync(hotelId);
-
-    public async Task<int?> GetIdByRoomIdAsync(int roomId)
+    public HotelRepository(HotelDbContext context)
     {
-        var hotel = await _dbContext.Rooms
-            .Where(r => r.RoomId == roomId)
-            .SelectMany(r => r.Amenities)
-            .SelectMany(a => a.Hotels)
-            .Distinct()
-            .FirstOrDefaultAsync();
-
-        return hotel?.HotelId;
+        _context = context;
     }
 
-    public async Task<IEnumerable<Hotel>> GetAllAsync() =>
-        await _dbContext.Hotels.ToListAsync();
+    public async Task<IEnumerable<Hotel>> GetAllAsync()
+        => await _context.Hotels.ToListAsync();
+
+    public async Task<Hotel?> GetByIdAsync(int id)
+        => await _context.Hotels.FindAsync(id);
 
     public async Task<Hotel> CreateAsync(Hotel hotel)
     {
-        _dbContext.Hotels.Add(hotel);
-        await _dbContext.SaveChangesAsync();
+        _context.Hotels.Add(hotel);
+        await _context.SaveChangesAsync();
         return hotel;
     }
 
     public async Task<Hotel> UpdateAsync(Hotel hotel)
     {
-        _dbContext.Hotels.Update(hotel);
-        await _dbContext.SaveChangesAsync();
+        _context.Hotels.Update(hotel);
+        await _context.SaveChangesAsync();
         return hotel;
     }
 
     public async Task DeleteAsync(Hotel hotel)
     {
-        throw new NotImplementedException();
+        _context.Hotels.Remove(hotel);
+        await _context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Hotel>> SearchByLocationAsync(string location) =>
-        await _dbContext.Hotels
-            .Where(hotel => hotel.Location != null && hotel.Location.ToLower().Contains(location.ToLower()))
+    public async Task<IEnumerable<Hotel>> SearchByLocationAsync(string location)
+        => await _context.Hotels
+            .Where(h => h.Location != null && h.Location.ToLower().Contains(location.ToLower()))
             .ToListAsync();
 
     public async Task<IEnumerable<Room>> GetRoomsByHotelIdAsync(int hotelId)
     {
-        throw new NotImplementedException();
+        return await _context.Rooms
+            .Include(r => r.RoomType)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<Room>> GetAvailableRoomsByHotelIdAsync(int hotelId)
-    {
-        throw new NotImplementedException();
-    }
+        => await _context.Rooms
+            .Include(r => r.RoomType)
+            .Where(r => r.IsAvailable == true)
+            .ToListAsync();
 
     public async Task<IEnumerable<Reservation>> GetReservationsByHotelIdAsync(int hotelId)
-    {
-        throw new NotImplementedException();
-    }
+        => await _context.Reservations
+            .Include(r => r.Room)
+            .ThenInclude(room => room != null ? room.RoomType : null)
+            .ToListAsync();
 }

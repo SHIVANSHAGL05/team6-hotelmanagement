@@ -2,20 +2,15 @@ using System.Text;
 using FluentValidation;
 using HotelManagement.API.Filters;
 using HotelManagement.API.Middlewares;
-using HotelManagement.API.Modules.AmenityModule.Repositories;
-using HotelManagement.API.Modules.AmenityModule.Services;
+using HotelManagement.API.Repositories;
+using HotelManagement.API.Services;
 using HotelManagement.API.Modules.AuthModule.Services;
 using HotelManagement.API.Modules.AuthModule.Validators;
+using HotelManagement.API.Modules.HotelModule.Validators;
 using HotelManagement.API.Modules.HotelModule.Repositories;
 using HotelManagement.API.Modules.HotelModule.Services;
-using HotelManagement.API.Modules.PaymentModule.Repositories;
-using HotelManagement.API.Modules.PaymentModule.Services;
 using HotelManagement.API.Modules.ReservationModule.Repositories;
 using HotelManagement.API.Modules.ReservationModule.Services;
-using HotelManagement.API.Modules.RoomModule.Repositories;
-using HotelManagement.API.Modules.RoomModule.Services;
-using HotelManagement.API.Modules.RoomTypeModule.Repositories;
-using HotelManagement.API.Modules.RoomTypeModule.Services;
 using HotelManagement.Common.Data;
 using HotelManagement.Common.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -23,7 +18,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RoomService = HotelManagement.API.Modules.RoomModule.Services.RoomService;
+using RoomService = HotelManagement.API.Services.RoomService;
+using Microsoft.Identity.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +67,7 @@ builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 // ============ Repositories =============
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
@@ -79,6 +76,7 @@ builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
 builder.Services.AddScoped<IAmenityRepository, AmenityRepository>();
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

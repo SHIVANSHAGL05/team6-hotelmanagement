@@ -1,4 +1,4 @@
-using HotelManagement.API.Modules.AmenityModule.DTOs;
+using HotelManagement.API.DTOs;
 
 namespace HotelManagement.API.Modules.ReservationModule.DTOs;
 
