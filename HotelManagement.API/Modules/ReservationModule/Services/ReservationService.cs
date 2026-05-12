@@ -1,6 +1,5 @@
 using AutoMapper;
 using HotelManagement.API.Modules.AmenityModule.Services;
-using HotelManagement.API.Modules.HotelModule.Services;
 using HotelManagement.API.Modules.PaymentModule.Services;
 using HotelManagement.API.Modules.ReservationModule.DTOs;
 using HotelManagement.API.Modules.ReservationModule.Exceptions;
@@ -16,7 +15,6 @@ public class ReservationService(
     IRoomService roomService, 
     IRoomTypeService roomTypeService, 
     IAmenityService amenityService, 
-    IHotelService hotelService,
     IPaymentService paymentService,
     IMapper mapper) : IReservationService
 {
@@ -24,7 +22,6 @@ public class ReservationService(
     private readonly IRoomService _roomService = roomService;
     private readonly IRoomTypeService _roomTypeService = roomTypeService;
     private readonly IAmenityService _amenityService = amenityService;
-    private readonly IHotelService _hotelService = hotelService;
     private readonly IPaymentService _paymentService = paymentService;
     private readonly IMapper _mapper = mapper;
     
@@ -54,8 +51,6 @@ public class ReservationService(
         var room = await _roomService.GetRoomDetailsByIdAsync(roomId);
         var roomType = await _roomTypeService.GetRoomTypeDetailsByIdAsync(room.RoomTypeId);
         var amenities = await _amenityService.GetAmenitiesByRoomIdAsync(roomId);
-        var hotelId = await _hotelService.GetHotelIdByRoomIdAsync(roomId);
-        var hotelDetails = await _hotelService.GetHotelDetailsByIdAsync(hotelId);
         var paymentDetails = await _paymentService
             .GetPaymentDetailsByReservationIdAsync(reservation.ReservationId);
 
@@ -73,9 +68,9 @@ public class ReservationService(
             RoomType = roomType.TypeName,
             Amenities = amenities,
             PricePerNight = roomType.PricePerNight,
-            HotelId = hotelId,
-            HotelName = hotelDetails.Name,
-            HotelLocation = hotelDetails.Location,
+            HotelId = 0,
+            HotelName = string.Empty,
+            HotelLocation = string.Empty,
             TotalPrice = paymentDetails.Amount
         };
         

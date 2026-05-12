@@ -6,6 +6,7 @@ using HotelManagement.API.Modules.AmenityModule.Repositories;
 using HotelManagement.API.Modules.AmenityModule.Services;
 using HotelManagement.API.Modules.AuthModule.Services;
 using HotelManagement.API.Modules.AuthModule.Validators;
+using HotelManagement.API.Modules.HotelModule.Validators;
 using HotelManagement.API.Modules.HotelModule.Repositories;
 using HotelManagement.API.Modules.HotelModule.Services;
 using HotelManagement.API.Modules.PaymentModule.Repositories;

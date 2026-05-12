@@ -4,9 +4,8 @@ namespace HotelManagement.API.Modules.HotelModule.Repositories;
 
 public interface IHotelRepository
 {
-    Task<Hotel?> GetByIdAsync(int hotelId);
-    Task<int?> GetIdByRoomIdAsync(int roomId);
     Task<IEnumerable<Hotel>> GetAllAsync();
+    Task<Hotel?> GetByIdAsync(int id);
     Task<Hotel> CreateAsync(Hotel hotel);
     Task<Hotel> UpdateAsync(Hotel hotel);
     Task DeleteAsync(Hotel hotel);
