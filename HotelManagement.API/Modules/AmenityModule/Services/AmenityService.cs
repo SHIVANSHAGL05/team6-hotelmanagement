@@ -1,22 +1,62 @@
-using HotelManagement.API.Modules.AmenityModule.DTOs;
-using HotelManagement.API.Modules.AmenityModule.Repositories;
+using HotelManagement.API.DTOs;
+using HotelManagement.Common.Models;
+using HotelManagement.API.Repositories;
+using HotelManagement.API.Validators;
 
-namespace HotelManagement.API.Modules.AmenityModule.Services;
+namespace HotelManagement.API.Services;
 
 public class AmenityService(IAmenityRepository amenityRepository) : IAmenityService
 {
-    private readonly IAmenityRepository _amenityRepository = amenityRepository;
-    
-    public async Task<AmenityDto> GetAmenityByIdAsync(int amenityId)
+    public async Task<List<AmenityDto>> GetAllAsync() => (await amenityRepository.GetAllAsync()).Select(MapAmenity).ToList();
+
+    public async Task<AmenityDto?> GetByIdAsync(int id) =>
+        (await amenityRepository.GetByIdAsync(id)) is { } amenity ? MapAmenity(amenity) : null;
+
+    public async Task<List<AmenityDto>> SearchByNameAsync(string name) =>
+        (await amenityRepository.SearchByNameAsync(name)).Select(MapAmenity).ToList();
+
+    public async Task<List<object>> GetHotelsByAmenityAsync(int id) =>
+        (await amenityRepository.GetHotelsByAmenityIdAsync(id)).Select(x => (object)new { x.HotelId, x.Name }).ToList();
+
+    public async Task<List<object>> GetRoomsByAmenityAsync(int id) =>
+        (await amenityRepository.GetRoomsByAmenityIdAsync(id)).Select(x => (object)new { x.RoomId, x.RoomNumber, x.RoomTypeId }).ToList();
+
+    public async Task<List<AmenityDto>> GetHotelOnlyAsync() =>
+        (await amenityRepository.GetHotelOnlyAmenitiesAsync()).Select(MapAmenity).ToList();
+
+    public async Task<List<AmenityDto>> GetRoomOnlyAsync() =>
+        (await amenityRepository.GetRoomOnlyAmenitiesAsync()).Select(MapAmenity).ToList();
+
+    public async Task<AmenityDto> CreateAsync(AmenityCreateDto dto)
     {
-        throw new NotImplementedException();
+        AmenityCreateDtoValidator.Validate(dto);
+        var amenity = await amenityRepository.AddAsync(new Amenity { Name = dto.Name, Description = dto.Description });
+        return MapAmenity(amenity);
     }
 
-    public async Task<List<AmenityDto>> GetAmenitiesByRoomIdAsync(int roomId) =>
-        (await _amenityRepository.GetAmenitiesByRoomIdAsync(roomId))
-            .Select(a => new AmenityDto
-            {
-                Name = a.Name ?? string.Empty,
-                Description = a.Description ?? string.Empty,
-            }).ToList();
+    public async Task<bool> UpdateAsync(int id, AmenityCreateDto dto)
+    {
+        AmenityCreateDtoValidator.Validate(dto);
+        var existing = await amenityRepository.GetByIdAsync(id);
+        if (existing is null) return false;
+        existing.Name = dto.Name;
+        existing.Description = dto.Description;
+        await amenityRepository.UpdateAsync(existing);
+        return true;
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var existing = await amenityRepository.GetByIdAsync(id);
+        if (existing is null) return false;
+        await amenityRepository.DeleteAsync(existing);
+        return true;
+    }
+
+    private static AmenityDto MapAmenity(Amenity a) => new()
+    {
+        AmenityId = a.AmenityId,
+        Name = a.Name ?? string.Empty,
+        Description = a.Description
+    };
 }

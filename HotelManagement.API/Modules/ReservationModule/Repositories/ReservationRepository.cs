@@ -24,4 +24,9 @@ public class ReservationRepository(HotelDbContext dbContext) : IReservationRepos
                 r.RoomId == roomId &&
                 checkIn < r.CheckOutDate &&
                 checkOut > r.CheckInDate);
+
+    public async Task<IEnumerable<Reservation>> GetReservationsByUserIdAsync(string userId) =>
+        await _dbContext.Reservations
+            .Where(r => r.ApplicationUsers.Any(u => u.Id == userId))
+            .ToListAsync();
 }

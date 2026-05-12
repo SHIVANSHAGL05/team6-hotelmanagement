@@ -1,13 +1,6 @@
 namespace HotelManagement.API.Modules.HotelModule.DTOs;
 
-public class HotelCreateDto
-{
-    public string? Name { get; set; }
-    public string? Location { get; set; }
-    public string? Description { get; set; }
-}
-
-public class HotelUpdateDto
+public class HotelDto
 {
     public string? Name { get; set; }
     public string? Location { get; set; }

@@ -1,7 +1,7 @@
 using HotelManagement.API.Exceptions;
-using HotelManagement.API.Modules.AmenityModule.Repositories;
 using HotelManagement.API.Modules.HotelModule.DTOs;
 using HotelManagement.API.Modules.HotelModule.Repositories;
+using HotelManagement.API.Repositories;
 using HotelManagement.Common.Models;
 
 namespace HotelManagement.API.Modules.HotelModule.Services;
@@ -30,7 +30,7 @@ public class HotelService : IHotelService
         return MapToResponse(hotel);
     }
 
-    public async Task<HotelResponseDto> CreateAsync(HotelCreateDto dto)
+    public async Task<HotelResponseDto> CreateAsync(HotelDto dto)
     {
         var hotel = new Hotel
         {
@@ -42,7 +42,7 @@ public class HotelService : IHotelService
         return MapToResponse(created);
     }
 
-    public async Task<HotelResponseDto> UpdateAsync(int id, HotelUpdateDto dto)
+    public async Task<HotelResponseDto> UpdateAsync(int id, HotelDto dto)
     {
         var hotel = await _hotelRepo.GetByIdAsync(id)
             ?? throw new NotFoundException($"Hotel with id {id} was not found.");

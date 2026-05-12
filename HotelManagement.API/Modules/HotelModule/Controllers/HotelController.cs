@@ -13,13 +13,13 @@ namespace HotelManagement.API.Modules.HotelModule.Controllers
     public class HotelController : ControllerBase
     {
         private readonly IHotelService _service;
-        private readonly IValidator<HotelCreateDto> _createValidator;
-        private readonly IValidator<HotelUpdateDto> _updateValidator;
+        private readonly IValidator<HotelDto> _createValidator;
+        private readonly IValidator<HotelDto> _updateValidator;
 
         public HotelController(
             IHotelService service,
-            IValidator<HotelCreateDto> createValidator,
-            IValidator<HotelUpdateDto> updateValidator)
+            IValidator<HotelDto> createValidator,
+            IValidator<HotelDto> updateValidator)
         {
             _service = service;
             _createValidator = createValidator;
@@ -44,7 +44,7 @@ namespace HotelManagement.API.Modules.HotelModule.Controllers
 
         // POST /api/hotels
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] HotelCreateDto dto)
+        public async Task<IActionResult> Create([FromBody] HotelDto dto)
         {
             var validation = await _createValidator.ValidateAsync(dto);
             if (!validation.IsValid)
@@ -58,7 +58,7 @@ namespace HotelManagement.API.Modules.HotelModule.Controllers
 
         // PUT /api/hotels/{id}
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] HotelUpdateDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] HotelDto dto)
         {
             var validation = await _updateValidator.ValidateAsync(dto);
             if (!validation.IsValid)

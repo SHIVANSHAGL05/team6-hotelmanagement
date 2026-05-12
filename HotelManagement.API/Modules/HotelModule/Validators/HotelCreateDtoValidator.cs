@@ -3,9 +3,9 @@ using HotelManagement.API.Modules.HotelModule.DTOs;
 
 namespace HotelManagement.API.Modules.HotelModule.Validators;
 
-public class HotelCreateDtoValidator : AbstractValidator<HotelCreateDto>
+public class HotelDtoValidator : AbstractValidator<HotelDto>
 {
-    public HotelCreateDtoValidator()
+    public HotelDtoValidator()
     {
         RuleFor(hotel => hotel.Name)
             .NotEmpty()

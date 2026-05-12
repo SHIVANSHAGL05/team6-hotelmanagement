@@ -1,12 +1,12 @@
 using AutoMapper;
-using HotelManagement.API.Modules.AmenityModule.Services;
-using HotelManagement.API.Modules.PaymentModule.Services;
+using HotelManagement.API.Modules.AuthModule.DTOs;
 using HotelManagement.API.Modules.ReservationModule.DTOs;
 using HotelManagement.API.Modules.ReservationModule.Exceptions;
 using HotelManagement.API.Modules.ReservationModule.Repositories;
-using HotelManagement.API.Modules.RoomModule.Services;
-using HotelManagement.API.Modules.RoomTypeModule.Services;
+using HotelManagement.API.Modules.RoomTypeModule.DTOs;
+using HotelManagement.API.Services;
 using HotelManagement.Common.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace HotelManagement.API.Modules.ReservationModule.Services;
 
@@ -14,17 +14,17 @@ public class ReservationService(
     IReservationRepository reservationRepository, 
     IRoomService roomService, 
     IRoomTypeService roomTypeService, 
-    IAmenityService amenityService, 
     IPaymentService paymentService,
-    IMapper mapper) : IReservationService
+    IMapper mapper,
+    UserManager<ApplicationUser> userManager) : IReservationService
 {
     private readonly IReservationRepository _reservationRepository = reservationRepository;
     private readonly IRoomService _roomService = roomService;
     private readonly IRoomTypeService _roomTypeService = roomTypeService;
-    private readonly IAmenityService _amenityService = amenityService;
     private readonly IPaymentService _paymentService = paymentService;
     private readonly IMapper _mapper = mapper;
-    
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+
     public async Task<ReservationDetailsDto> GetReservationDetailsAsync(int reservationId)
     {
         var reservation = await _reservationRepository.GetReservationByIdAsync(reservationId);
@@ -37,6 +37,11 @@ public class ReservationService(
     public async Task<ReservationDetailsDto> CreateReservationAsync(CreateReservationDto reservationDto)
     {
         var reservation = _mapper.Map<Reservation>(reservationDto);
+        var user = await _userManager.FindByEmailAsync(reservationDto.GuestEmail);
+        if (user == null)
+            throw new InvalidOperationException($"User with email '{reservationDto.GuestEmail}' does not exist.");
+
+        reservation.ApplicationUsers = new List<ApplicationUser> { user };
         await _reservationRepository.CreateReservationAsync(reservation);
         return await ToReservationDetailsDto(reservation);
     }
@@ -48,11 +53,12 @@ public class ReservationService(
     {
         var roomId =  reservation.RoomId ?? 
                       throw new ReservationNotFoundException(reservation.ReservationId);
-        var room = await _roomService.GetRoomDetailsByIdAsync(roomId);
-        var roomType = await _roomTypeService.GetRoomTypeDetailsByIdAsync(room.RoomTypeId);
-        var amenities = await _amenityService.GetAmenitiesByRoomIdAsync(roomId);
-        var paymentDetails = await _paymentService
-            .GetPaymentDetailsByReservationIdAsync(reservation.ReservationId);
+        var room = await _roomService.GetRoomDetailsByIdAsync(roomId)
+            ?? throw new ReservationNotFoundException(reservation.ReservationId);
+        var roomType = await _roomTypeService.GetRoomTypeDetailsByIdAsync(room.RoomTypeId ?? 0)
+            ?? throw new ReservationNotFoundException(reservation.ReservationId);
+        var amenities = await _roomService.GetAmenitiesByRoomIdAsync(roomId);
+        var paymentDetails = await _paymentService.GetPaymentDetailsByReservationIdAsync(reservation.ReservationId);
 
         var reservationDetails = new ReservationDetailsDto
         {
@@ -62,18 +68,37 @@ public class ReservationService(
             GuestPhoneNumber = reservation.GuestPhone ?? "",
             CheckInDate = reservation.CheckInDate ?? new DateOnly(),
             CheckOutDate = reservation.CheckOutDate ?? new DateOnly(),
-            BookingDate = paymentDetails.PaymentDate,
-            RoomNumber = room.RoomNumber,
-            RoomTypeId = room.RoomTypeId,
+            BookingDate = paymentDetails?.PaymentDate ?? new DateOnly(),
+            RoomNumber = room.RoomNumber ?? 0,
+            RoomTypeId = room.RoomTypeId ?? 0,
             RoomType = roomType.TypeName,
             Amenities = amenities,
-            PricePerNight = roomType.PricePerNight,
+            PricePerNight = roomType.PricePerNight ?? 0,
             HotelId = 0,
             HotelName = string.Empty,
             HotelLocation = string.Empty,
-            TotalPrice = paymentDetails.Amount
+            TotalPrice = paymentDetails?.Amount ?? 0
         };
         
         return reservationDetails;
+    }
+
+    public async Task<List<ReservationDetailsDto>> GetReservationsByUserEmailAsync(string userEmail) 
+    {
+        var user = await _userManager.FindByEmailAsync(userEmail);
+        if (user == null)
+            throw new InvalidOperationException($"User with email '{userEmail}' does not exist.");
+
+        var userId = user.Id;
+        var reservations = await _reservationRepository.GetReservationsByUserIdAsync(userId);
+        var result = new List<ReservationDetailsDto>();
+
+        foreach (var reservation in reservations)
+        {
+            var data = await ToReservationDetailsDto(reservation);
+            result.Add(data);
+        }
+
+        return result;
     }
 }

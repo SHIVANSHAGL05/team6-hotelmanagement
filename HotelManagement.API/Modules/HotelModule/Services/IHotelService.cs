@@ -6,8 +6,8 @@ public interface IHotelService
 {
     Task<IEnumerable<HotelResponseDto>> GetAllAsync();
     Task<HotelResponseDto> GetByIdAsync(int id);
-    Task<HotelResponseDto> CreateAsync(HotelCreateDto dto);
-    Task<HotelResponseDto> UpdateAsync(int id, HotelUpdateDto dto);
+    Task<HotelResponseDto> CreateAsync(HotelDto dto);
+    Task<HotelResponseDto> UpdateAsync(int id, HotelDto dto);
     Task DeleteAsync(int id);
     Task<IEnumerable<HotelResponseDto>> SearchByLocationAsync(string location);
     Task<IEnumerable<RoomBriefDto>> GetRoomsAsync(int hotelId);
