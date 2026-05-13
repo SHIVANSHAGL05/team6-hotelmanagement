@@ -1,9 +1,10 @@
-using HotelManagement.API.DTOs;
-using HotelManagement.API.Services;
+using HotelManagement.API.Modules.ReviewModule.DTOs;
+using HotelManagement.Common.DTOs;
+using HotelManagement.API.Modules.ReviewModule.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelManagement.API.Controllers;
+namespace HotelManagement.API.Modules.ReviewModule.Controllers;
 
 [ApiController]
 [Route("api/reviews")]

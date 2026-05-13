@@ -1,5 +1,5 @@
 using FluentValidation;
-using HotelManagement.API.DTOs;
+using HotelManagement.Common.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

@@ -1,16 +1,24 @@
+using System.Security.Claims;
 using System.Text;
 using FluentValidation;
 using HotelManagement.API.Filters;
 using HotelManagement.API.Middlewares;
-using HotelManagement.API.Repositories;
-using HotelManagement.API.Services;
+using HotelManagement.API.Modules.AmenityModule.Repositories;
+using HotelManagement.API.Modules.AmenityModule.Services;
 using HotelManagement.API.Modules.AuthModule.Services;
 using HotelManagement.API.Modules.AuthModule.Validators;
-using HotelManagement.API.Modules.HotelModule.Validators;
 using HotelManagement.API.Modules.HotelModule.Repositories;
 using HotelManagement.API.Modules.HotelModule.Services;
+using HotelManagement.API.Modules.PaymentModule.Repositories;
+using HotelManagement.API.Modules.PaymentModule.Services;
 using HotelManagement.API.Modules.ReservationModule.Repositories;
 using HotelManagement.API.Modules.ReservationModule.Services;
+using HotelManagement.API.Modules.ReviewModule.Repositories;
+using HotelManagement.API.Modules.ReviewModule.Services;
+using HotelManagement.API.Modules.RoomModule.Repositories;
+using HotelManagement.API.Modules.RoomModule.Services;
+using HotelManagement.API.Modules.RoomTypeModule.Repositories;
+using HotelManagement.API.Modules.RoomTypeModule.Services;
 using HotelManagement.Common.Data;
 using HotelManagement.Common.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,8 +26,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RoomService = HotelManagement.API.Services.RoomService;
-using Microsoft.Identity.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +56,8 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = audience,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+        RoleClaimType = ClaimTypes.Role
     };
 });
 

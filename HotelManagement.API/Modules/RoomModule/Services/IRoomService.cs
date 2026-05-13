@@ -1,6 +1,7 @@
-using HotelManagement.API.DTOs;
+using HotelManagement.API.Modules.AmenityModule.DTOs;
+using HotelManagement.API.Modules.RoomModule.DTOs;
 
-namespace HotelManagement.API.Services;
+namespace HotelManagement.API.Modules.RoomModule.Services;
 
 public interface IRoomService
 {

@@ -29,40 +29,36 @@
 
     <ItemGroup>
       <Folder Include="Modules\AmenityModule\Controllers\" />
-      <Folder Include="Modules\AmenityModule\Exceptions\" />
-      <Folder Include="Modules\AmenityModule\Mappings\" />
-      <Folder Include="Modules\AmenityModule\Middlewares\" />
+      <Folder Include="Modules\AmenityModule\Services\" />
+      <Folder Include="Modules\AmenityModule\Repositories\" />
+      <Folder Include="Modules\AmenityModule\DTOs" />
       <Folder Include="Modules\AmenityModule\Validators\" />
         
       <Folder Include="Modules\ReviewModule\Controllers\" />
-      <Folder Include="Modules\ReviewModule\DTOs\" />
-      <Folder Include="Modules\ReviewModule\Exceptions\" />
-      <Folder Include="Modules\ReviewModule\Mappings\" />
-      <Folder Include="Modules\ReviewModule\Middlewares\" />
       <Folder Include="Modules\ReviewModule\Repositories" />
       <Folder Include="Modules\ReviewModule\Services\" />
+      <Folder Include="Modules\ReviewModule\DTOs\" />
       <Folder Include="Modules\ReviewModule\Validators\" />
         
       <Folder Include="Modules\PaymentModule\Controllers\" />
-      <Folder Include="Modules\PaymentModule\Exceptions\" />
-      <Folder Include="Modules\PaymentModule\Mappings\" />
+      <Folder Include="Modules\PaymentModule\Services\" />
+      <Folder Include="Modules\PaymentModule\Repositories\" />
+      <Folder Include="Modules\PaymentModule\DTOs\" />
       <Folder Include="Modules\PaymentModule\Validators\" />
         
       <Folder Include="Modules\HotelModule\Controllers\" />
-      <Folder Include="Modules\HotelModule\Exceptions\" />
-      <Folder Include="Modules\HotelModule\Mappings\" />
-      <Folder Include="Modules\HotelModule\Middlewares\" />
+      <Folder Include="Modules\HotelModule\Services\" />
+      <Folder Include="Modules\HotelModule\Repositories\" />
+      <Folder Include="Modules\HotelModule\DTOs\" />
       <Folder Include="Modules\HotelModule\Validators\" />
         
       <Folder Include="Modules\RoomModule\Controllers\" />
-      <Folder Include="Modules\RoomModule\Exceptions\" />
-      <Folder Include="Modules\RoomModule\Mappings\" />
-      <Folder Include="Modules\RoomModule\Middlewares\" />
+      <Folder Include="Modules\RoomModule\Services\" />
+      <Folder Include="Modules\RoomModule\Repositories\" />
+      <Folder Include="Modules\RoomModule\DTOs\" />
       <Folder Include="Modules\RoomModule\Validators\" />
         
       <Folder Include="Modules\RoomTypeModule\Controllers\" />
-      <Folder Include="Modules\RoomTypeModule\Exceptions\" />
-      <Folder Include="Modules\RoomTypeModule\Mappings\" />
       <Folder Include="Modules\RoomTypeModule\Validators\" />
     </ItemGroup>
 

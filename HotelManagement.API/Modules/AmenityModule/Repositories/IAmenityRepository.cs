@@ -1,6 +1,6 @@
 using HotelManagement.Common.Models;
 
-namespace HotelManagement.API.Repositories;
+namespace HotelManagement.API.Modules.AmenityModule.Repositories;
 
 public interface IAmenityRepository
 {

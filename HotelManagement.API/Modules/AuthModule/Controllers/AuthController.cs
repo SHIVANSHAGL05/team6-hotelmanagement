@@ -1,3 +1,5 @@
+using HotelManagement.API.DTOs;
+using HotelManagement.API.Exceptions;
 using HotelManagement.API.Filters;
 using HotelManagement.API.Modules.AuthModule.DTOs;
 using HotelManagement.API.Modules.AuthModule.Services;
@@ -26,8 +28,18 @@ public class AuthController(UserManager<ApplicationUser> userManager, IAuthToken
         
         var roles = await _userManager.GetRolesAsync(user);
         var token = _tokenService.GetToken(user, roles);
+
+        var response = new ApiResponse<object>
+        {
+            Success = true,
+            StatusCode = 200,
+            Message = "User successfully logged in.",
+            Data = new { token },
+            Errors = null,
+            Timestamp = DateTime.UtcNow
+        };
         
-        return Ok(new { token });
+        return Ok(response);
     }
 
     [HttpPost("register")]
@@ -41,9 +53,19 @@ public class AuthController(UserManager<ApplicationUser> userManager, IAuthToken
         };
 
         var result = await _userManager.CreateAsync(user, dto.Password);
-        if (!result.Succeeded) return BadRequest();
+        if (!result.Succeeded) throw new BadRequestException("Error while creating new user.");
+
+        var response = new ApiResponse<RegisterRequestDto>
+        {
+            Success = true,
+            StatusCode = 201,
+            Message = "User successfully registered.",
+            Data = dto,
+            Errors = null,
+            Timestamp = DateTime.UtcNow
+        };
                      
         await _userManager.AddToRoleAsync(user, dto.Role);
-        return CreatedAtAction(nameof(Register), new { userId = user.Id, role = dto.Role },  null);
+        return CreatedAtAction(nameof(Register), new { userId = user.Id, role = dto.Role }, response);
     }
 }

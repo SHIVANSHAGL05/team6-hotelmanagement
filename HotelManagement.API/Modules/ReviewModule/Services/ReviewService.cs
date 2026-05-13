@@ -1,9 +1,9 @@
-using HotelManagement.API.DTOs;
+using HotelManagement.API.Modules.ReviewModule.DTOs;
 using HotelManagement.Common.Models;
-using HotelManagement.API.Repositories;
-using HotelManagement.API.Validators;
+using HotelManagement.API.Modules.ReviewModule.Repositories;
+using HotelManagement.API.Modules.ReviewModule.Validators;
 
-namespace HotelManagement.API.Services;
+namespace HotelManagement.API.Modules.ReviewModule.Services;
 
 public class ReviewService(IReviewRepository reviewRepository) : IReviewService
 {

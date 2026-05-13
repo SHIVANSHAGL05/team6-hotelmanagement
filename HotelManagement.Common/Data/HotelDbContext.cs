@@ -26,7 +26,7 @@ public partial class HotelDbContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<RoomType> RoomTypes { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=Blackpearl\\SQLEXPRESS;Database=hotel;Trusted_Connection=True;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=hotel;User ID=sa;Password=Admin@1234;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

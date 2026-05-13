@@ -1,9 +1,9 @@
-using HotelManagement.API.DTOs;
+using HotelManagement.API.Modules.RoomTypeModule.DTOs;
 using HotelManagement.Common.Models;
-using HotelManagement.API.Repositories;
-using HotelManagement.API.Validators;
+using HotelManagement.API.Modules.RoomTypeModule.Repositories;
+using HotelManagement.API.Modules.RoomTypeModule.Validators;
 
-namespace HotelManagement.API.Services;
+namespace HotelManagement.API.Modules.RoomTypeModule.Services;
 
 public class RoomTypeService(IRoomTypeRepository roomTypeRepository) : IRoomTypeService
 {

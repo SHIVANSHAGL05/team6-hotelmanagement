@@ -1,6 +1,6 @@
 using HotelManagement.Common.Models;
 
-namespace HotelManagement.API.Repositories;
+namespace HotelManagement.API.Modules.RoomModule.Repositories;
 
 public interface IRoomRepository
 {

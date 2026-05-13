@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace HotelManagement.API.DTOs;
+namespace HotelManagement.API.Modules.RoomModule.DTOs;
 
 // ── Room DTOs ──────────────────────────────────────────────────────────────
 

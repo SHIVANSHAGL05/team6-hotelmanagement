@@ -1,9 +1,9 @@
-using HotelManagement.API.DTOs;
+using HotelManagement.API.Modules.AmenityModule.DTOs;
 using HotelManagement.Common.Models;
-using HotelManagement.API.Repositories;
-using HotelManagement.API.Validators;
+using HotelManagement.API.Modules.AmenityModule.Repositories;
+using HotelManagement.API.Modules.AmenityModule.Validators;
 
-namespace HotelManagement.API.Services;
+namespace HotelManagement.API.Modules.AmenityModule.Services;
 
 public class AmenityService(IAmenityRepository amenityRepository) : IAmenityService
 {

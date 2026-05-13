@@ -1,8 +1,7 @@
-﻿namespace HotelManagement.API.DTOs
+﻿namespace HotelManagement.API.Modules.PaymentModule.DTOs;
+
+public class PaymentUpdateDto
 {
-    public class PaymentUpdateDto
-    {
-        public decimal Amount { get; set; }
-        public string PaymentStatus { get; set; } = string.Empty;
-    }
+    public decimal Amount { get; set; }
+    public string PaymentStatus { get; set; } = string.Empty;
 }

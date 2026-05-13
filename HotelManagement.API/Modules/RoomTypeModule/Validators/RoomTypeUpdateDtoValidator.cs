@@ -1,13 +1,12 @@
-using HotelManagement.API.DTOs;
-using HotelManagement.API.Exceptions;
+using HotelManagement.API.Modules.RoomTypeModule.DTOs;
 
 using FluentValidation;
 
-namespace HotelManagement.API.Validators;
+namespace HotelManagement.API.Modules.RoomTypeModule.Validators;
 
-public static class RoomTypeCreateDtoValidator
+public static class RoomTypeUpdateDtoValidator
 {
-    public static void Validate(RoomTypeCreateDto dto)
+    public static void Validate(RoomTypeUpdateDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.TypeName))
             throw new ValidationException("Room type name is required.");

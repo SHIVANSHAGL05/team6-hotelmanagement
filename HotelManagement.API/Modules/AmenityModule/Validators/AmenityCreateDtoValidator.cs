@@ -1,9 +1,8 @@
-using HotelManagement.API.DTOs;
-using HotelManagement.API.Exceptions;
+using HotelManagement.API.Modules.AmenityModule.DTOs;
 
 using FluentValidation;
 
-namespace HotelManagement.API.Validators;
+namespace HotelManagement.API.Modules.AmenityModule.Validators;
 
 public static class AmenityCreateDtoValidator
 {

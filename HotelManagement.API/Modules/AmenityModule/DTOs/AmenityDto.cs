@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace HotelManagement.API.DTOs;
+namespace HotelManagement.API.Modules.AmenityModule.DTOs;
 
 public class AmenityDto
 {

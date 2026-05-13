@@ -1,4 +1,5 @@
 using System.Net;
+using HotelManagement.Common.DTOs;
 using HotelManagement.API.Exceptions;
 
 namespace HotelManagement.API.Middlewares;
@@ -31,22 +32,23 @@ public class GlobalExceptionMiddleware(RequestDelegate next)
         };
 
         httpContext.Response.StatusCode = statusCode;
-        var details = new List<string>();
+        var errors = new List<string>();
         var message = exception.Message;
 
         while (exception.InnerException != null)
         {
-            details.Add(exception.InnerException.Message);
+            errors.Add(exception.InnerException.Message);
             exception = exception.InnerException;
         }
 
-        var response = new
+        var response = new ApiResponse<string?>
         {
             Success = false,
-            StatusCode = "500",
+            StatusCode = statusCode,
             Message = message,
-            Details = details,
-            TimeStamp = DateTime.UtcNow
+            Data = null,
+            Errors = errors,
+            Timestamp = DateTime.UtcNow
         };
         
         return httpContext.Response.WriteAsJsonAsync(response);

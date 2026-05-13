@@ -1,123 +1,133 @@
 using FluentValidation;
 using HotelManagement.API.Modules.HotelModule.DTOs;
 using HotelManagement.API.Modules.HotelModule.Services;
-using HotelManagement.API.Modules.HotelModule.Helpers;
+using HotelManagement.Common.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 
-namespace HotelManagement.API.Modules.HotelModule.Controllers
+namespace HotelManagement.API.Modules.HotelModule.Controllers;
 
+[ApiController]
+[Route("api/hotels")]
+public class HotelController(
+    IHotelService service,
+    IValidator<HotelDto> createValidator,
+    IValidator<HotelDto> updateValidator) : ControllerBase
 {
-    [ApiController]
-    [Route("api/hotels")]
-    public class HotelController : ControllerBase
+    private readonly IHotelService _service = service;
+    private readonly IValidator<HotelDto> _createValidator = createValidator;
+    private readonly IValidator<HotelDto> _updateValidator = updateValidator;
+
+    // GET /api/hotels
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
     {
-        private readonly IHotelService _service;
-        private readonly IValidator<HotelDto> _createValidator;
-        private readonly IValidator<HotelDto> _updateValidator;
-
-        public HotelController(
-            IHotelService service,
-            IValidator<HotelDto> createValidator,
-            IValidator<HotelDto> updateValidator)
+        var hotels = await _service.GetAllAsync();
+        var response = new ApiResponse<IEnumerable<HotelResponseDto>>
         {
-            _service = service;
-            _createValidator = createValidator;
-            _updateValidator = updateValidator;
-        }
+            Success = true,
+            StatusCode = 200,
+            Message = "Successfully fetched hotels.",
+            Data = hotels,
+            Errors = null,
+            Timestamp = DateTime.UtcNow
+        };
 
-        // GET /api/hotels
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        return Ok(response);
+    }
+
+    // GET /api/hotels/{id}
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var hotel = await _service.GetByIdAsync(id);
+        var response = new ApiResponse<HotelResponseDto>
         {
-            var hotels = await _service.GetAllAsync();
-            return Ok(ApiResponse<IEnumerable<HotelResponseDto>>.Ok(hotels));
-        }
+            Success = true,
+            StatusCode = 200,
+            Message = "Successfully fetched hotel details.",
+            Data = hotel,
+            Errors = null,
+            Timestamp = DateTime.UtcNow
+        };
 
-        // GET /api/hotels/{id}
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var hotel = await _service.GetByIdAsync(id);
-            return Ok(ApiResponse<HotelResponseDto>.Ok(hotel));
-        }
+        return Ok(response);
+    }
 
-        // POST /api/hotels
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] HotelDto dto)
-        {
-            var validation = await _createValidator.ValidateAsync(dto);
-            if (!validation.IsValid)
-                return UnprocessableEntity(ApiResponse<object>.Fail("Validation failed.",
-                    validation.Errors.Select(e => e.ErrorMessage).ToList()));
+    // POST /api/hotels
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] HotelDto dto)
+    {
+        var validation = await _createValidator.ValidateAsync(dto);
+        if (!validation.IsValid)
+            return UnprocessableEntity(ApiResponse<object>.Fail(422, "Validation failed.",
+                validation.Errors.Select(e => e.ErrorMessage).ToList()));
 
-            var created = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.HotelId },
-                ApiResponse<HotelResponseDto>.Ok(created, "Hotel created successfully."));
-        }
+        var created = await _service.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.HotelId },
+            ApiResponse<HotelResponseDto>.Ok(200, "Hotel created successfully.", created));
+    }
 
-        // PUT /api/hotels/{id}
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] HotelDto dto)
-        {
-            var validation = await _updateValidator.ValidateAsync(dto);
-            if (!validation.IsValid)
-                return UnprocessableEntity(ApiResponse<object>.Fail("Validation failed.",
-                    validation.Errors.Select(e => e.ErrorMessage).ToList()));
+    // PUT /api/hotels/{id}
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] HotelDto dto)
+    {
+        var validation = await _updateValidator.ValidateAsync(dto);
+        if (!validation.IsValid)
+            return UnprocessableEntity(ApiResponse<object>.Fail(422, "Validation failed.",
+                validation.Errors.Select(e => e.ErrorMessage).ToList()));
 
-            var updated = await _service.UpdateAsync(id, dto);
-            return Ok(ApiResponse<HotelResponseDto>.Ok(updated, "Hotel updated successfully."));
-        }
+        var updated = await _service.UpdateAsync(id, dto);
+        return Ok(ApiResponse<HotelResponseDto>.Ok(200, "Hotel updated successfully.", updated));
+    }
 
-        // DELETE /api/hotels/{id}
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _service.DeleteAsync(id);
-            return Ok(ApiResponse<object>.Ok(null!, "Hotel deleted successfully."));
-        }
+    // DELETE /api/hotels/{id}
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _service.DeleteAsync(id);
+        return Ok(ApiResponse<object>.Ok(200, "Hotel deleted successfully.", null));
+    }
 
-        // GET /api/hotels/search?location={location}
-        [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] string location)
-        {
-            if (string.IsNullOrWhiteSpace(location))
-                return BadRequest(ApiResponse<object>.Fail("Location query parameter is required."));
+    // GET /api/hotels/search?location={location}
+    [HttpGet("search")]
+    public async Task<IActionResult> Search([FromQuery] string location)
+    {
+        if (string.IsNullOrWhiteSpace(location))
+            return BadRequest(ApiResponse<object>.Fail(400, "Location query parameter is required."));
 
-            var hotels = await _service.SearchByLocationAsync(location);
-            return Ok(ApiResponse<IEnumerable<HotelResponseDto>>.Ok(hotels));
-        }
+        var hotels = await _service.SearchByLocationAsync(location);
+        return Ok(ApiResponse<IEnumerable<HotelResponseDto>>.Ok(200, "Success", hotels));
+    }
 
-        // GET /api/hotels/{id}/rooms
-        [HttpGet("{id:int}/rooms")]
-        public async Task<IActionResult> GetRooms(int id)
-        {
-            var rooms = await _service.GetRoomsAsync(id);
-            return Ok(ApiResponse<IEnumerable<RoomBriefDto>>.Ok(rooms));
-        }
+    // GET /api/hotels/{id}/rooms
+    [HttpGet("{id:int}/rooms")]
+    public async Task<IActionResult> GetRooms(int id)
+    {
+        var rooms = await _service.GetRoomsAsync(id);
+        return Ok(ApiResponse<IEnumerable<RoomBriefDto>>.Ok(200, "Success", rooms));
+    }
 
-        // GET /api/hotels/{id}/available-rooms
-        [HttpGet("{id:int}/available-rooms")]
-        public async Task<IActionResult> GetAvailableRooms(int id)
-        {
-            var rooms = await _service.GetAvailableRoomsAsync(id);
-            return Ok(ApiResponse<IEnumerable<RoomBriefDto>>.Ok(rooms));
-        }
+    // GET /api/hotels/{id}/available-rooms
+    [HttpGet("{id:int}/available-rooms")]
+    public async Task<IActionResult> GetAvailableRooms(int id)
+    {
+        var rooms = await _service.GetAvailableRoomsAsync(id);
+        return Ok(ApiResponse<IEnumerable<RoomBriefDto>>.Ok(200, "Success", rooms));
+    }
 
-        // GET /api/hotels/{id}/reservations
-        [HttpGet("{id:int}/reservations")]
-        public async Task<IActionResult> GetReservations(int id)
-        {
-            var reservations = await _service.GetReservationsAsync(id);
-            return Ok(ApiResponse<IEnumerable<ReservationBriefDto>>.Ok(reservations));
-        }
+    // GET /api/hotels/{id}/reservations
+    [HttpGet("{id:int}/reservations")]
+    public async Task<IActionResult> GetReservations(int id)
+    {
+        var reservations = await _service.GetReservationsAsync(id);
+        return Ok(ApiResponse<IEnumerable<ReservationBriefDto>>.Ok(200, "Success", reservations));
+    }
 
-        // GET /api/hotels/{id}/summary
-        [HttpGet("{id:int}/summary")]
-        public async Task<IActionResult> GetSummary(int id)
-        {
-            var summary = await _service.GetSummaryAsync(id);
-            return Ok(ApiResponse<HotelSummaryDto>.Ok(summary));
-        }
+    // GET /api/hotels/{id}/summary
+    [HttpGet("{id:int}/summary")]
+    public async Task<IActionResult> GetSummary(int id)
+    {
+        var summary = await _service.GetSummaryAsync(id);
+        return Ok(ApiResponse<HotelSummaryDto>.Ok(200, "Success", summary));
     }
 }

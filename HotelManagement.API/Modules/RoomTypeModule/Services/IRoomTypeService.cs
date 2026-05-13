@@ -1,6 +1,6 @@
-using HotelManagement.API.DTOs;
+using HotelManagement.API.Modules.RoomTypeModule.DTOs;
 
-namespace HotelManagement.API.Services;
+namespace HotelManagement.API.Modules.RoomTypeModule.Services;
 
 public interface IRoomTypeService
 {

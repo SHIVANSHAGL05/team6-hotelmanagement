@@ -1,9 +1,8 @@
-using HotelManagement.API.DTOs;
-using HotelManagement.API.Exceptions;
+using HotelManagement.API.Modules.ReviewModule.DTOs;
 
 using FluentValidation;
 
-namespace HotelManagement.API.Validators;
+namespace HotelManagement.API.Modules.ReviewModule.Validators;
 
 public static class ReviewUpdateDtoValidator
 {

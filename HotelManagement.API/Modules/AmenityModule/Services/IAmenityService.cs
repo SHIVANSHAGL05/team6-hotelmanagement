@@ -1,6 +1,6 @@
-using HotelManagement.API.DTOs;
+using HotelManagement.API.Modules.AmenityModule.DTOs;
 
-namespace HotelManagement.API.Services;
+namespace HotelManagement.API.Modules.AmenityModule.Services;
 
 public interface IAmenityService
 {

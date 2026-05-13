@@ -1,7 +1,7 @@
 using HotelManagement.API.Exceptions;
 using HotelManagement.API.Modules.HotelModule.DTOs;
 using HotelManagement.API.Modules.HotelModule.Repositories;
-using HotelManagement.API.Repositories;
+using HotelManagement.API.Modules.AmenityModule.Repositories;
 using HotelManagement.Common.Models;
 
 namespace HotelManagement.API.Modules.HotelModule.Services;

@@ -1,6 +1,6 @@
-using HotelManagement.API.DTOs;
+using HotelManagement.API.Modules.ReviewModule.DTOs;
 
-namespace HotelManagement.API.Services;
+namespace HotelManagement.API.Modules.ReviewModule.Services;
 
 public interface IReviewService
 {

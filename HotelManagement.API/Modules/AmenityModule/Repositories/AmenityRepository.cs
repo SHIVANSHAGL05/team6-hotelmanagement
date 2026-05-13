@@ -2,7 +2,7 @@ using HotelManagement.Common.Data;
 using HotelManagement.Common.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HotelManagement.API.Repositories;
+namespace HotelManagement.API.Modules.AmenityModule.Repositories;
 
 public class AmenityRepository(HotelDbContext context) : IAmenityRepository
 {

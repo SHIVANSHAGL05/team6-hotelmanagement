@@ -1,9 +1,10 @@
 using HotelManagement.API.DTOs;
-using HotelManagement.API.Services;
+using HotelManagement.API.Modules.AmenityModule.DTOs;
+using HotelManagement.API.Modules.AmenityModule.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelManagement.API.Controllers;
+namespace HotelManagement.API.Modules.AmenityModule.Controllers;
 
 [ApiController]
 [Route("api/amenities")]

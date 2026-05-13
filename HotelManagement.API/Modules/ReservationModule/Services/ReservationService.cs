@@ -1,10 +1,10 @@
 using AutoMapper;
-using HotelManagement.API.Modules.AuthModule.DTOs;
+using HotelManagement.API.Modules.PaymentModule.Services;
 using HotelManagement.API.Modules.ReservationModule.DTOs;
 using HotelManagement.API.Modules.ReservationModule.Exceptions;
 using HotelManagement.API.Modules.ReservationModule.Repositories;
-using HotelManagement.API.Modules.RoomTypeModule.DTOs;
-using HotelManagement.API.Services;
+using HotelManagement.API.Modules.RoomModule.Services;
+using HotelManagement.API.Modules.RoomTypeModule.Services;
 using HotelManagement.Common.Models;
 using Microsoft.AspNetCore.Identity;
 

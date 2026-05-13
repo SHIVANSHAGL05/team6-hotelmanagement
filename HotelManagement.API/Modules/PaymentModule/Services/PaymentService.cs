@@ -1,122 +1,120 @@
-﻿using HotelManagement.API.DTOs;
-using HotelManagement.API.Modules.PaymentModule.DTOs;
+﻿using HotelManagement.API.Modules.PaymentModule.DTOs;
 using HotelManagement.Common.Models;
-using HotelManagement.API.Repositories;
+using HotelManagement.API.Modules.PaymentModule.Repositories;
 
-namespace HotelManagement.API.Services
+namespace HotelManagement.API.Modules.PaymentModule.Services;
+
+public class PaymentService : IPaymentService
 {
-    public class PaymentService : IPaymentService
+    private readonly IPaymentRepository _repository;
+
+    public PaymentService(IPaymentRepository repository)
     {
-        private readonly IPaymentRepository _repository;
+        _repository = repository;
+    }
 
-        public PaymentService(IPaymentRepository repository)
+    public async Task<IEnumerable<Payment>> GetAllPaymentsAsync()
+    {
+        return await _repository.GetAllAsync();
+    }
+
+    public async Task<Payment?> GetPaymentByIdAsync(int id)
+    {
+        return await _repository.GetByIdAsync(id);
+    }
+
+    public async Task<Payment?> CreatePaymentAsync(PaymentCreateDto dto)
+    {
+        var reservationExists = await _repository.ReservationExistsAsync(dto.ReservationId);
+
+        if (!reservationExists)
+            return null;
+
+        var payment = new Payment
         {
-            _repository = repository;
-        }
+            ReservationId = dto.ReservationId,
+            Amount = dto.Amount,
+            PaymentDate = DateOnly.FromDateTime(DateTime.Now),
+            PaymentStatus = dto.PaymentStatus
+        };
 
-        public async Task<IEnumerable<Payment>> GetAllPaymentsAsync()
-        {
-            return await _repository.GetAllAsync();
-        }
+        return await _repository.AddAsync(payment);
+    }
 
-        public async Task<Payment?> GetPaymentByIdAsync(int id)
-        {
-            return await _repository.GetByIdAsync(id);
-        }
+    public async Task<Payment?> UpdatePaymentAsync(int id, PaymentUpdateDto dto)
+    {
+        var payment = await _repository.GetByIdAsync(id);
 
-        public async Task<Payment?> CreatePaymentAsync(PaymentCreateDto dto)
-        {
-            var reservationExists = await _repository.ReservationExistsAsync(dto.ReservationId);
+        if (payment == null)
+            return null;
 
-            if (!reservationExists)
-                return null;
+        payment.Amount = dto.Amount;
+        payment.PaymentStatus = dto.PaymentStatus;
 
-            var payment = new Payment
+        return await _repository.UpdateAsync(payment);
+    }
+
+    public async Task<bool> DeletePaymentAsync(int id)
+    {
+        return await _repository.DeleteAsync(id);
+    }
+
+    public async Task<IEnumerable<Payment>> GetPaymentsByReservationAsync(int reservationId)
+    {
+        return await _repository.GetByReservationAsync(reservationId);
+    }
+
+    public async Task<IEnumerable<Payment>> GetSuccessfulPaymentsAsync()
+    {
+        return await _repository.GetByStatusAsync("Paid");
+    }
+
+    public async Task<IEnumerable<Payment>> GetFailedPaymentsAsync()
+    {
+        return await _repository.GetByStatusAsync("Pending");
+    }
+
+    public async Task<Payment?> UpdatePaymentStatusAsync(int id, PaymentStatusUpdateDto dto)
+    {
+        var payment = await _repository.GetByIdAsync(id);
+
+        if (payment == null)
+            return null;
+
+        payment.PaymentStatus = dto.PaymentStatus;
+
+        return await _repository.UpdateAsync(payment);
+    }
+
+    public async Task<Payment?> RefundPaymentAsync(int id)
+    {
+        var payment = await _repository.GetByIdAsync(id);
+
+        if (payment == null)
+            return null;
+
+        if (payment.PaymentStatus != "Successful")
+            return null;
+
+        payment.PaymentStatus = "Refunded";
+
+        return await _repository.UpdateAsync(payment);
+    }
+
+    public async Task<PaymentDetailsDto?> GetPaymentDetailsByReservationIdAsync(int reservationId)
+    {
+        var payment = (await _repository.GetByReservationAsync(reservationId))
+            .OrderByDescending(p => p.PaymentDate)
+            .FirstOrDefault();
+
+        return payment is null
+            ? null
+            : new PaymentDetailsDto
             {
-                ReservationId = dto.ReservationId,
-                Amount = dto.Amount,
-                PaymentDate = DateOnly.FromDateTime(DateTime.Now),
-                PaymentStatus = dto.PaymentStatus
+                ReservationId = payment.ReservationId ?? 0,
+                Amount = payment.Amount ?? 0m,
+                PaymentDate = payment.PaymentDate ?? DateOnly.MinValue,
+                PaymentStatus = payment.PaymentStatus ?? string.Empty
             };
-
-            return await _repository.AddAsync(payment);
-        }
-
-        public async Task<Payment?> UpdatePaymentAsync(int id, PaymentUpdateDto dto)
-        {
-            var payment = await _repository.GetByIdAsync(id);
-
-            if (payment == null)
-                return null;
-
-            payment.Amount = dto.Amount;
-            payment.PaymentStatus = dto.PaymentStatus;
-
-            return await _repository.UpdateAsync(payment);
-        }
-
-        public async Task<bool> DeletePaymentAsync(int id)
-        {
-            return await _repository.DeleteAsync(id);
-        }
-
-        public async Task<IEnumerable<Payment>> GetPaymentsByReservationAsync(int reservationId)
-        {
-            return await _repository.GetByReservationAsync(reservationId);
-        }
-
-        public async Task<IEnumerable<Payment>> GetSuccessfulPaymentsAsync()
-        {
-            return await _repository.GetByStatusAsync("Paid");
-        }
-
-        public async Task<IEnumerable<Payment>> GetFailedPaymentsAsync()
-        {
-            return await _repository.GetByStatusAsync("Pending");
-        }
-
-        public async Task<Payment?> UpdatePaymentStatusAsync(int id, PaymentStatusUpdateDto dto)
-        {
-            var payment = await _repository.GetByIdAsync(id);
-
-            if (payment == null)
-                return null;
-
-            payment.PaymentStatus = dto.PaymentStatus;
-
-            return await _repository.UpdateAsync(payment);
-        }
-
-        public async Task<Payment?> RefundPaymentAsync(int id)
-        {
-            var payment = await _repository.GetByIdAsync(id);
-
-            if (payment == null)
-                return null;
-
-            if (payment.PaymentStatus != "Successful")
-                return null;
-
-            payment.PaymentStatus = "Refunded";
-
-            return await _repository.UpdateAsync(payment);
-        }
-
-        public async Task<PaymentDetailsDto?> GetPaymentDetailsByReservationIdAsync(int reservationId)
-        {
-            var payment = (await _repository.GetByReservationAsync(reservationId))
-                .OrderByDescending(p => p.PaymentDate)
-                .FirstOrDefault();
-
-            return payment is null
-                ? null
-                : new PaymentDetailsDto
-                {
-                    ReservationId = payment.ReservationId ?? 0,
-                    Amount = payment.Amount ?? 0m,
-                    PaymentDate = payment.PaymentDate ?? DateOnly.MinValue,
-                    PaymentStatus = payment.PaymentStatus ?? string.Empty
-                };
-        }
     }
 }

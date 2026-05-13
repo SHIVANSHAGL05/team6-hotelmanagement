@@ -1,113 +1,107 @@
-﻿using HotelManagement.API.DTOs;
-using HotelManagement.API.Services;
+﻿using HotelManagement.API.Modules.PaymentModule.DTOs;
+using HotelManagement.API.Modules.PaymentModule.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelManagement.API.Controllers
+namespace HotelManagement.API.Modules.PaymentModule.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class PaymentController(IPaymentService service) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PaymentController : ControllerBase
+    private readonly IPaymentService _service = service;
+
+    [HttpGet]
+    public async Task<IActionResult> GetPayments()
     {
-        private readonly IPaymentService _service;
+        var payments = await _service.GetAllPaymentsAsync();
+        return Ok(payments);
+    }
 
-        public PaymentController(IPaymentService service)
-        {
-            _service = service;
-        }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetPayment(int id)
+    {
+        var payment = await _service.GetPaymentByIdAsync(id);
 
-        [HttpGet]
-        public async Task<IActionResult> GetPayments()
-        {
-            var payments = await _service.GetAllPaymentsAsync();
-            return Ok(payments);
-        }
+        if (payment == null)
+            return NotFound("Payment not found.");
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetPayment(int id)
-        {
-            var payment = await _service.GetPaymentByIdAsync(id);
+        return Ok(payment);
+    }
 
-            if (payment == null)
-                return NotFound("Payment not found.");
+    [HttpPost]
+    public async Task<IActionResult> CreatePayment(PaymentCreateDto dto)
+    {
+        var payment = await _service.CreatePaymentAsync(dto);
 
-            return Ok(payment);
-        }
+        if (payment == null)
+            return BadRequest("Reservation does not exist.");
 
-        [HttpPost]
-        public async Task<IActionResult> CreatePayment(PaymentCreateDto dto)
-        {
-            var payment = await _service.CreatePaymentAsync(dto);
+        return CreatedAtAction(nameof(GetPayment), new { id = payment.PaymentId }, payment);
+    }
 
-            if (payment == null)
-                return BadRequest("Reservation does not exist.");
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdatePayment(int id, PaymentUpdateDto dto)
+    {
+        var payment = await _service.UpdatePaymentAsync(id, dto);
 
-            return CreatedAtAction(nameof(GetPayment), new { id = payment.PaymentId }, payment);
-        }
+        if (payment == null)
+            return NotFound("Payment not found.");
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePayment(int id, PaymentUpdateDto dto)
-        {
-            var payment = await _service.UpdatePaymentAsync(id, dto);
+        return Ok(payment);
+    }
 
-            if (payment == null)
-                return NotFound("Payment not found.");
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePayment(int id)
+    {
+        var result = await _service.DeletePaymentAsync(id);
 
-            return Ok(payment);
-        }
+        if (!result)
+            return NotFound("Payment not found.");
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePayment(int id)
-        {
-            var result = await _service.DeletePaymentAsync(id);
+        return Ok("Payment deleted successfully.");
+    }
 
-            if (!result)
-                return NotFound("Payment not found.");
+    [HttpGet("by-reservation/{reservationId}")]
+    public async Task<IActionResult> GetPaymentsByReservation(int reservationId)
+    {
+        var payments = await _service.GetPaymentsByReservationAsync(reservationId);
+        return Ok(payments);
+    }
 
-            return Ok("Payment deleted successfully.");
-        }
+    [HttpGet("successful")]
+    public async Task<IActionResult> GetSuccessfulPayments()
+    {
+        var payments = await _service.GetSuccessfulPaymentsAsync();
+        return Ok(payments);
+    }
 
-        [HttpGet("by-reservation/{reservationId}")]
-        public async Task<IActionResult> GetPaymentsByReservation(int reservationId)
-        {
-            var payments = await _service.GetPaymentsByReservationAsync(reservationId);
-            return Ok(payments);
-        }
+    [HttpGet("failed")]
+    public async Task<IActionResult> GetFailedPayments()
+    {
+        var payments = await _service.GetFailedPaymentsAsync();
+        return Ok(payments);
+    }
 
-        [HttpGet("successful")]
-        public async Task<IActionResult> GetSuccessfulPayments()
-        {
-            var payments = await _service.GetSuccessfulPaymentsAsync();
-            return Ok(payments);
-        }
+    [HttpPut("{id}/status")]
+    public async Task<IActionResult> UpdatePaymentStatus(int id, PaymentStatusUpdateDto dto)
+    {
+        var payment = await _service.UpdatePaymentStatusAsync(id, dto);
 
-        [HttpGet("failed")]
-        public async Task<IActionResult> GetFailedPayments()
-        {
-            var payments = await _service.GetFailedPaymentsAsync();
-            return Ok(payments);
-        }
+        if (payment == null)
+            return NotFound("Payment not found.");
 
-        [HttpPut("{id}/status")]
-        public async Task<IActionResult> UpdatePaymentStatus(int id, PaymentStatusUpdateDto dto)
-        {
-            var payment = await _service.UpdatePaymentStatusAsync(id, dto);
-
-            if (payment == null)
-                return NotFound("Payment not found.");
-
-            return Ok(payment);
-        }
+        return Ok(payment);
+    }
 
 
-        [HttpPost("{id}/refund")]
-        public async Task<IActionResult> RefundPayment(int id)
-        {
-            var payment = await _service.RefundPaymentAsync(id);
+    [HttpPost("{id}/refund")]
+    public async Task<IActionResult> RefundPayment(int id)
+    {
+        var payment = await _service.RefundPaymentAsync(id);
 
-            if (payment == null)
-                return BadRequest("Payment not found or only successful payments can be refunded.");
+        if (payment == null)
+            return BadRequest("Payment not found or only successful payments can be refunded.");
 
-            return Ok(payment);
-        }
+        return Ok(payment);
     }
 }
